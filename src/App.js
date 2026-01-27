@@ -8,7 +8,7 @@ function App() {
     <div className="App">
       <Header />
       <div class="dashboard">
-        <h1>Simple React App served by NGINX and Docker Nambi</h1>
+        <h1>Simple React App served by NGINX and Docker Nambi 123</h1>
       </div>
       <Footer />
     </div>

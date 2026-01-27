@@ -15,6 +15,10 @@ pipeline {
         APP_NAME = "react-ui"
         HOST_PORT = "80"
         CONTAINER_PORT = "80"
+
+        // Kubernetes info
+        KUBE_CONFIG_CRED = "kubeconfig-prod" // Jenkins credential with kubeconfig file
+        K8S_MANIFEST_DIR = "k8s"            // Kubernetes manifests folder in repo
     }
 
     stages {
@@ -55,14 +59,26 @@ pipeline {
                 }
             }
         }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                withCredentials([file(credentialsId: "${KUBE_CONFIG_CRED}", variable: 'KUBECONFIG')]) {
+                    sh """
+                        kubectl apply -f ${K8S_MANIFEST_DIR}/deployment.yaml
+                        kubectl apply -f ${K8S_MANIFEST_DIR}/service.yaml
+                    """
+                }
+            }
+        }
     }
 
     post {
         success {
-            echo "✅ React UI deployed successfully! Access at: http://${EC2_IP}/"
+            echo "✅ React UI deployed successfully on EC2 and Kubernetes!"
         }
         failure {
             echo "❌ Pipeline failed!"
         }
     }
 }
+
